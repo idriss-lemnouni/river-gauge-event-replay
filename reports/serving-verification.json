@@ -1,0 +1,19 @@
+{
+  "snapshot_sha256": "973ea4bfd6a2a37470090e04edeca5519ec7e8237b401ea0597721f854416b6d",
+  "cassandra_partitions": 8,
+  "cassandra_rows_per_upsert_pass": [
+    169,
+    169
+  ],
+  "cache_partition_rows": 24,
+  "cache_ttl_seconds": 900,
+  "cold_read": {
+    "source": "cassandra",
+    "wall_ms": 1314.562
+  },
+  "warm_read": {
+    "source": "redis",
+    "wall_ms": 318.768
+  },
+  "timing_context": "Single local Docker CLI end-to-end comparison including process startup."
+}

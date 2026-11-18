@@ -42,5 +42,33 @@ services:
       - ./runs:/workspace/runs
     mem_limit: 2304m
 
+  cassandra:
+    image: cassandra:5.0.9
+    profiles: [serving]
+    environment:
+      MAX_HEAP_SIZE: 512M
+      HEAP_NEWSIZE: 128M
+    volumes:
+      - cassandra-data:/var/lib/cassandra
+    mem_limit: 2g
+    healthcheck:
+      test: ["CMD-SHELL", "cqlsh -e 'DESCRIBE KEYSPACES' >/dev/null"]
+      interval: 10s
+      timeout: 8s
+      retries: 14
+      start_period: 35s
+
+  redis:
+    image: redis:8.2.3-alpine
+    profiles: [serving]
+    command: ["redis-server", "--save", "", "--maxmemory", "64mb", "--maxmemory-policy", "allkeys-lru"]
+    mem_limit: 128m
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 5s
+      timeout: 4s
+      retries: 8
+
 volumes:
   kafka-data:
+  cassandra-data:

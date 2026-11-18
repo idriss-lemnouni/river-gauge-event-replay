@@ -98,6 +98,24 @@ def hourly_rollup(accepted):
     return revisions, ties, latest, hourly
 
 
+def hourly_json(hourly):
+    return hourly.orderBy("station", "series_id", "unit", "hour_utc").toJSON().toLocalIterator()
+
+
+def export_hourly(spark, args):
+    hourly = spark.read.parquet(str(args.hourly))
+    count = 0
+    args.out.parent.mkdir(parents=True, exist_ok=True)
+    with TemporaryDirectory(dir=args.out.parent) as work:
+        target = Path(work) / "hourly.jsonl"
+        with target.open("wb") as stream:
+            for row in hourly_json(hourly):
+                stream.write(row.encode("utf-8") + b"\n")
+                count += 1
+        target.replace(args.out)
+    return {"exported_hourly_rows": count}
+
+
 def aggregate(spark, args):
     if args.out.exists():
         raise ValueError(f"Choose a new output directory for this snapshot: {args.out}")
@@ -107,7 +125,7 @@ def aggregate(spark, args):
     # Kafka metadata and replay labels are deliberately excluded from the analytics digest.
     digest = hashlib.sha256()
     hours = 0
-    for row in hourly.orderBy("station", "series_id", "unit", "hour_utc").toJSON().toLocalIterator():
+    for row in hourly_json(hourly):
         digest.update(row.encode("utf-8") + b"\n")
         hours += 1
     raw_rows = bronze.count()
@@ -138,6 +156,9 @@ def main():
     reader.add_argument("--progress", type=Path, required=True)
     rollup = operations.add_parser("aggregate")
     rollup.add_argument("--out", type=Path, required=True)
+    export = operations.add_parser("export-hourly")
+    export.add_argument("--hourly", type=Path, required=True)
+    export.add_argument("--out", type=Path, required=True)
     for operation in (reader, rollup):
         operation.add_argument("--bronze", type=Path, required=True)
     args = parser.parse_args()
@@ -149,7 +170,8 @@ def main():
     )
     spark.sparkContext.setLogLevel("WARN")
     try:
-        result = ingest(spark, args) if args.operation == "ingest" else aggregate(spark, args)
+        handlers = {"ingest": ingest, "aggregate": aggregate, "export-hourly": export_hourly}
+        result = handlers[args.operation](spark, args)
         print(json.dumps(result, indent=2))
     finally:
         spark.stop()
