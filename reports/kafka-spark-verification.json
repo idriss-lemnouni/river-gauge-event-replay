@@ -1,0 +1,63 @@
+{
+  "source_observations": 673,
+  "first": {
+    "bronze_rows": 673,
+    "invalid_rows": 0,
+    "valid_rows": 673,
+    "unique_records": 673,
+    "replayed_duplicates": 0,
+    "ambiguous_event_keys": 0,
+    "latest_observations": 673,
+    "hourly_groups": 169,
+    "hourly_sha256": "973ea4bfd6a2a37470090e04edeca5519ec7e8237b401ea0597721f854416b6d"
+  },
+  "second": {
+    "bronze_rows": 1346,
+    "invalid_rows": 0,
+    "valid_rows": 1346,
+    "unique_records": 673,
+    "replayed_duplicates": 673,
+    "ambiguous_event_keys": 0,
+    "latest_observations": 673,
+    "hourly_groups": 169,
+    "hourly_sha256": "973ea4bfd6a2a37470090e04edeca5519ec7e8237b401ea0597721f854416b6d"
+  },
+  "stream": {
+    "first": {
+      "query_id": "2a2209f4-a2c1-447d-9677-238d4d4ca806",
+      "input_rows": 673,
+      "batches": [
+        {
+          "batch_id": 0,
+          "input_rows": 673,
+          "trigger_ms": 3517
+        }
+      ]
+    },
+    "second": {
+      "query_id": "2a2209f4-a2c1-447d-9677-238d4d4ca806",
+      "input_rows": 673,
+      "batches": [
+        {
+          "batch_id": 1,
+          "input_rows": 673,
+          "trigger_ms": 3533
+        }
+      ]
+    }
+  },
+  "producers": [
+    {
+      "replay_id": "potomac-validation-03-first",
+      "messages": 673,
+      "producer_seconds": 2.008,
+      "messages_per_second_including_producer_startup": 335.2
+    },
+    {
+      "replay_id": "potomac-validation-03-second",
+      "messages": 673,
+      "producer_seconds": 1.726,
+      "messages_per_second_including_producer_startup": 389.9
+    }
+  ]
+}
